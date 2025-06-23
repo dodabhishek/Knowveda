@@ -1,8 +1,14 @@
 import React from 'react'
-
+import Hero from '../../components/students/Hero.jsx';
+import Companies from '../../components/students/Companies.jsx';
+import CourseSection from '../../components/students/CourseSection.jsx';
 const Home = () => {
   return (
-    <div></div>
+    <div className='flex flex-col items-center space-y-7 text-center'>
+     <Hero />
+     <Companies />
+     <CourseSection />
+    </div>
     
   )
 }
