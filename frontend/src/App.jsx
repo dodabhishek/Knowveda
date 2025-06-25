@@ -12,6 +12,7 @@ import Dashboard from './pages/educator/Dashboard.jsx';
 import MyCourses from './pages/educator/MyCourses.jsx';
 import StudentsEnrolled from './pages/educator/StudentsEnrolled.jsx';
 import Navbar from './components/students/Navbar.jsx';
+import CourseDetails from './pages/students/CourseDetails.jsx';
 
 
 const App = () => {
@@ -23,12 +24,12 @@ const App = () => {
       <Routes>
         {/* Student Routes */}
         <Route path="/" element={<Home />} />
-          <Route path='/course-list' element={<CourseSection />} />
-        <Route path="/course-list/:input" element={<CourseSection />} />
-        {/* <Route path="/course/:id" element={<CourseDetails />} /> */}
+          <Route path='/course-list' element={<CoursesList />} />
+        <Route path="/course-list/:input" element={<CoursesList />} />
+        <Route path="/course/:id" element={<CourseDetails />} />
         <Route path="/my-enrollments" element={<MyEnrollments />} />
         <Route path="/player/:courseId" element={<Player />} />
-        <Route path="/loading/:path" element={<Player />} />
+        <Route path="/loading/:path" element={<Loading />} />
 
         <Route path='/educator' element= {<Educator />}></Route>
               <Route path="add-course" element={<AddCourse />} />

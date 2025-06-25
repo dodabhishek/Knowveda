@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { AppContext } from '../../context/AddContext.jsx'
 import CourseCard from './CourseCard.jsx'
 const CourseSection = () => {
-  const {allCourses} = useContext(AppContext)
+  const {allCourses,navigate} = useContext(AppContext);
   console.log(allCourses.slice(0,4).map((course)=>{ return course}))
   return (
     <div  className='py-16 md:px-40 px-8'>
@@ -16,7 +16,7 @@ const CourseSection = () => {
              <CourseCard key={index} course={course} />
             ))}
           </div>
-         <Link to={'/course-list'} onClick={()=>scrollTo(0,0)}
+         <Link to={'/course-list'} onClick={()=>navigate('/course-list')}
          className='text-gray-500 border border-gray-500/30 px-10 py-3 rounded'
          >Show all courses</Link>
     </div>
