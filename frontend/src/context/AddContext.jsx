@@ -6,8 +6,16 @@ export const AppContext = createContext();
 
 export const AppContextProvider = (props) => {
 
+     const currency = import.meta.env.VITE_CURRENCY ;
+    const navigate = useNavigate();
+    const [allCourses,setAllCourses] = useState([]);
+    const [isEducator,setIsEducator] = useState(true);
+    const [enrolledCourses,setEnrolledCoures] = useState([]);
+
      useEffect(()=>{
         fetchAllCourses();
+        fetchEnrolledCourses();
+
     },[])
 
     // function to calculate course chapter time
@@ -39,10 +47,14 @@ export const AppContextProvider = (props) => {
       });
       return totalLectures ;
     } 
-    const currency = import.meta.env.VITE_CURRENCY ;
-    const navigate = useNavigate();
-    const [allCourses,setAllCourses] = useState([]);
-    const [isEducator,setIsEducator] = useState(true);
+ 
+
+    // fetch user enrolled courses
+    const fetchEnrolledCourses = async()=>{
+     
+      setEnrolledCoures(dummyCourses);
+    }
+
     //Fetch all courses
     const fetchAllCourses = async ()=>{
       setAllCourses(dummyCourses);
@@ -61,7 +73,7 @@ export const AppContextProvider = (props) => {
 
  
   const value =    {
-    currency ,allCourses,navigate,calculateRating,
+    currency ,allCourses,navigate,calculateRating,enrolledCourses,
     isEducator,setIsEducator,calculateChapterTime,calculateCourseDuration,calculateNoOfLectures
   }
 
