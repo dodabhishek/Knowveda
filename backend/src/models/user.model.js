@@ -1,24 +1,19 @@
-import { connectDB } from '../config/db.js';
+import { connectDB } from '../configs/db.js';
+import { v4 as uuidv4 } from 'uuid';
 
-export const createUser = async () => {
+export const createUser = async (user) => {
+  console.log(user);
   const conn = await connectDB();
-
-  if (!conn) return;
-
+  const id = uuidv4(); // Generate a unique ID
+  const { name, email, image_url } = user;
   try {
-    await conn.execute(`
-      CREATE TABLE IF NOT EXISTS users (
-        id VARCHAR(255) PRIMARY KEY,
-        name VARCHAR(255) NOT NULL,
-        email VARCHAR(255) NOT NULL UNIQUE,
-        image_url TEXT NOT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-      )
-    `);
-    console.log('Users table created or already exists.');
+    await conn.execute(
+      `INSERT INTO users (id, name, email, image_url) VALUES (?, ?, ?, ?)`,
+      [id, name, email, image_url]
+    );
+    return { id, name, email, image_url };
   } catch (error) {
-    console.error(' Failed to create users table:', error.message);
+    throw new Error('Failed to create user: ' + error.message);
   } finally {
     await conn.end();
   }
@@ -47,6 +42,19 @@ export const deleteUser = async (id) => {
     await conn.execute(`DELETE FROM users WHERE id = ?`, [id]);
   } catch (error) {
     console.error(' Failed to delete user:', error.message);
+  } finally {
+    await conn.end();
+  }
+};
+
+export const getAllUsers = async () => {
+  const conn = await connectDB();
+  try {
+    const [rows] = await conn.execute('SELECT * FROM users');
+    return rows;
+  } catch (error) {
+    console.error('Failed to fetch users:', error.message);
+    return [];
   } finally {
     await conn.end();
   }
