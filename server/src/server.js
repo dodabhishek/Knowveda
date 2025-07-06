@@ -4,6 +4,8 @@ import 'dotenv/config'
 import {connectDB} from './config/db.js';
 import { clerkWebhooks } from './controller/webhook.js';
 import User from './model/user.model.js';
+import educatorRouter from './routes/educatorRoute.js';
+import { clerkMiddleware } from '@clerk/express';
 
 const app = express();
 
@@ -14,7 +16,11 @@ app.get('/',(req,res)=>{
     res.send(`API Working`);
 })
 
-app.post('/cler', clerkWebhooks)
+// Webhook endpoint - NO authentication needed
+app.post('/clerk', clerkWebhooks);
+
+// Protected routes - apply authentication middleware
+app.use('/api/educator', clerkMiddleware(), educatorRouter);
 
 // Backup endpoint to sync user data from frontend
 app.post('/api/users/sync', async (req, res) => {

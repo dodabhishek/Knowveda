@@ -2,8 +2,9 @@ import { createContext, useEffect, useState } from "react";
 import { dummyCourses } from "../assets/assets";
 import { useNavigate } from "react-router-dom";
 import humanizeDuration from 'humanize-duration';
-import { useUser } from '@clerk/clerk-react';
-import axios from 'axios';
+import { useAuth, useUser } from '@clerk/clerk-react';
+
+
 
 export const AppContext = createContext();
 
@@ -12,47 +13,32 @@ export const AppContextProvider = (props) => {
      const currency = import.meta.env.VITE_CURRENCY ;
     const navigate = useNavigate();
     const { user } = useUser();
+      const {getToken} = useAuth();
     const [allCourses,setAllCourses] = useState([]);
     const [isEducator,setIsEducator] = useState(true);
-    const [enrolledCourses,setEnrolledCoures] = useState([]);
+    const [enrolledCourses, setEnrolledCourses] = useState([]);
+  
+    console.log(user);
 
      useEffect(()=>{
         fetchAllCourses();
         fetchEnrolledCourses();
     },[])
 
-    // Sync user with backend when user signs in
     useEffect(() => {
-        if (user) {
-            syncUserWithBackend();
-        }
+      if (user) logToken();
     }, [user]);
 
-    // Function to sync user data with backend
-    const syncUserWithBackend = async () => {
-        try {
-            const userData = {
-                _id: user.id,
-                email: user.emailAddresses[0]?.emailAddress,
-                name: `${user.firstName || ''} ${user.lastName || ''}`.trim(),
-                imageUrl: user.imageUrl,
-            };
-
-            const response = await axios.post('http://localhost:3000/api/users/sync', userData, {
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-
-            if (response.status === 200) {
-                console.log('User synced with backend successfully');
-            } else {
-                console.error('Failed to sync user with backend');
-            }
-        } catch (error) {
-            console.error('Error syncing user with backend:', error.response?.data || error.message);
-        }
-    };
+    const logToken = async ()=>{
+     const token = await getToken();
+     console.log(`getting token ${token}`);
+    }
+    // Sync user with backend when user signs in
+    // useEffect(() => {
+    //     if (user) {
+    //         syncUserWithBackend();
+    //     }
+    // }, [user]);
 
     // function to calculate course chapter time
     const calculateChapterTime = (chapter)=>{
@@ -88,7 +74,7 @@ export const AppContextProvider = (props) => {
     // fetch user enrolled courses
     const fetchEnrolledCourses = async()=>{
      
-      setEnrolledCoures(dummyCourses);
+      setEnrolledCourses(dummyCourses);
     }
 
     //Fetch all courses
