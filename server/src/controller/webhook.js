@@ -1,7 +1,7 @@
 import {Webhook} from 'svix'
 import User from '../model/user.model.js';
 
-// API controller functin to manage clerk user with database
+// API controller function to manage clerk user with database
 export const clerkWebhooks = async(req,res)=>{
     try {
         const whook = new Webhook(process.env.CLERK_WEBHOOK_SECRET)
@@ -11,7 +11,8 @@ export const clerkWebhooks = async(req,res)=>{
             'svix-signature':req.headers['svix-signature']
         })
         const {data, type} = req.body
-
+        console.log('Webhook received:', type, data)
+        
         switch (type) {
             case 'user.created':{
                 const userData = {
@@ -21,33 +22,39 @@ export const clerkWebhooks = async(req,res)=>{
                     imageUrl : data.image_url,
                 }
 
-                await User.create(userData);
-                res.json({})
+                const newUser = await User.create(userData);
+                console.log('User created:', newUser);
+                res.json({success: true, message: 'User created successfully'})
                 break ;
             }
                 
-             case 'user.updatated':{
+             case 'user.updated':{
                 const userData = {
-                    email:data.email_address[0],
+                    email:data.email_addresses[0].email_address,
                     name:data.first_name+' '+ data.last_name,
                     imageUrl : data.image_url,
                 }
 
-                await User.findbyIdAndUpdate(data.id,userData)
-                res.json({})
+                const updatedUser = await User.findByIdAndUpdate(data.id, userData, {new: true});
+                console.log('User updated:', updatedUser);
+                res.json({success: true, message: 'User updated successfully'})
                 break ;
              }
 
              case 'user.deleted':{
-                await User.findbyIdAndDelete(data.id)
-                res.json({})
+                const deletedUser = await User.findByIdAndDelete(data.id);
+                console.log('User deleted:', deletedUser);
+                res.json({success: true, message: 'User deleted successfully'})
                 break ;
              }
         
             default:
+                console.log('Unhandled webhook type:', type);
+                res.json({success: false, message: 'Unhandled webhook type'})
                 break;
         }
     } catch (error) {
-        res.json({success:false,message:error.message});
+        console.error('Webhook error:', error);
+        res.status(500).json({success:false, message: error.message});
     }
 }
